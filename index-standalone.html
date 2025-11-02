@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FDA 식품 안전 분석기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .search-section {
+            padding: 30px 40px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #searchInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #searchBtn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #searchBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .filter-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .results-section {
+            padding: 40px;
+            min-height: 400px;
+        }
+
+        .result-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .result-title {
+            font-size: 1.5em;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .result-category {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            background: #e9ecef;
+            color: #666;
+        }
+
+        .category-heavyMetals { background: #ff6b6b; color: white; }
+        .category-additives { background: #4ecdc4; color: white; }
+        .category-pesticides { background: #95e1d3; color: #333; }
+        .category-microbiological { background: #f38181; color: white; }
+        .category-allergens { background: #ffd93d; color: #333; }
+        .category-contaminants { background: #6c5ce7; color: white; }
+
+        .result-body {
+            line-height: 1.8;
+        }
+
+        .result-row {
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: bold;
+            color: #667eea;
+            display: inline-block;
+            min-width: 120px;
+        }
+
+        .result-value {
+            color: #555;
+        }
+
+        .severity-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .severity-높음 {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+            background: #51cf66;
+            color: white;
+        }
+
+        .applies-to {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .applies-to-item {
+            background: #f1f3f5;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .stats-section {
+            padding: 30px 40px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .stats-section h3 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        footer {
+            background: #2d3436;
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 10px 0;
+            opacity: 0.9;
+        }
+
+        footer a {
+            color: #74b9ff;
+            text-decoration: none;
+        }
+
+        .loading-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            header h1 { font-size: 1.8em; }
+            .search-section, .results-section { padding: 20px; }
+            .search-box { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔬 FDA 식품 안전 분석기</h1>
+            <p class="subtitle">미국 FDA 기준에 따른 식품 안전·기준·유해물질 검색 및 분석</p>
+        </header>
+
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="물질명, 식품명, 또는 카테고리를 검색하세요 (예: 납, 수은, 아스파탐, 살모넬라)">
+                <button id="searchBtn">검색</button>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-category="all">전체</button>
+                <button class="filter-btn" data-category="heavyMetals">중금속</button>
+                <button class="filter-btn" data-category="additives">식품첨가물</button>
+                <button class="filter-btn" data-category="pesticides">농약</button>
+                <button class="filter-btn" data-category="microbiological">미생물</button>
+                <button class="filter-btn" data-category="allergens">알레르겐</button>
+                <button class="filter-btn" data-category="contaminants">오염물질</button>
+            </div>
+        </div>
+
+        <div id="results" class="results-section">
+            <div class="loading-message">
+                <h2>데이터 로딩 중...</h2>
+            </div>
+        </div>
+
+        <div class="stats-section" id="statsSection" style="display: none;">
+            <h3>검색 통계</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalResults">0</div>
+                    <div class="stat-label">검색 결과</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="highSeverity">0</div>
+                    <div class="stat-label">높은 위험도</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="fdaApproved">0</div>
+                    <div class="stat-label">FDA 승인</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>⚠️ 이 정보는 참고용이며, 정확한 규제 정보는 <a href="https://www.fda.gov" target="_blank">FDA 공식 웹사이트</a>를 확인하세요.</p>
+            <p class="version">Version 1.2.0 | 단일 파일 버전</p>
+        </footer>
+    </div>
+
+    <script>
+// FDA 데이터
+const fdaStandards = {
+  "heavyMetals": [
+    {
+      "name": "납 (Lead)",
+      "nameEn": "Lead",
+      "category": "중금속",
+      "limit": "0.1 ppm",
+      "appliesTo": ["과일주스", "캔디", "영유아식품"],
+      "healthRisk": "신경계 손상, 발달 장애, 학습 능력 저하",
+      "severity": "높음"
+    },
+    {
+      "name": "수은 (Mercury)",
+      "nameEn": "Mercury",
+      "category": "중금속",
+      "limit": "1.0 ppm",
+      "appliesTo": ["생선", "해산물"],
+      "healthRisk": "신경계 손상, 태아 발달 장애",
+      "severity": "높음"
+    },
+    {
+      "name": "카드뮴 (Cadmium)",
+      "nameEn": "Cadmium",
+      "category": "중금속",
+      "limit": "0.1 ppm",
+      "appliesTo": ["초콜릿", "곡물"],
+      "healthRisk": "신장 손상, 골다공증",
+      "severity": "높음"
+    },
+    {
+      "name": "비소 (Arsenic)",
+      "nameEn": "Arsenic",
+      "category": "중금속",
+      "limit": "10 ppb (무기비소)",
+      "appliesTo": ["쌀", "쌀 제품", "영유아식품"],
+      "healthRisk": "암 발생 위험 증가, 심혈관 질환",
+      "severity": "높음"
+    }
+  ],
+  "additives": [
+    {
+      "name": "아스파탐 (Aspartame)",
+      "nameEn": "Aspartame",
+      "category": "감미료",
+      "adI": "50 mg/kg 체중/일",
+      "appliesTo": ["음료", "디저트", "껌"],
+      "status": "FDA 승인",
+      "notes": "페닐케톤뇨증 환자 주의"
+    },
+    {
+      "name": "타르색소 (Tartrazine)",
+      "nameEn": "Yellow 5",
+      "category": "착색료",
+      "adI": "7.5 mg/kg 체중/일",
+      "appliesTo": ["음료", "사탕", "가공식품"],
+      "status": "FDA 승인",
+      "notes": "알레르기 반응 가능"
+    },
+    {
+      "name": "안식향산나트륨 (Sodium Benzoate)",
+      "nameEn": "Sodium Benzoate",
+      "category": "보존료",
+      "adI": "5 mg/kg 체중/일",
+      "appliesTo": ["음료", "소스", "드레싱"],
+      "status": "FDA 승인",
+      "notes": "비타민C와 반응시 벤젠 생성 가능"
+    },
+    {
+      "name": "MSG (글루탐산나트륨)",
+      "nameEn": "Monosodium Glutamate",
+      "category": "향미증진제",
+      "adI": "제한 없음",
+      "appliesTo": ["가공식품", "조미료", "스낵"],
+      "status": "GRAS (일반적으로 안전한 것으로 인정)",
+      "notes": "일부 사람에게 두통, 홍조 증상 가능"
+    },
+    {
+      "name": "질산나트륨 (Sodium Nitrite)",
+      "nameEn": "Sodium Nitrite",
+      "category": "보존료/발색제",
+      "adI": "0.06 mg/kg 체중/일",
+      "appliesTo": ["육류 가공품", "베이컨", "햄"],
+      "status": "FDA 승인",
+      "notes": "고온에서 발암물질 생성 가능"
+    }
+  ],
+  "pesticides": [
+    {
+      "name": "클로르피리포스 (Chlorpyrifos)",
+      "nameEn": "Chlorpyrifos",
+      "category": "유기인계 살충제",
+      "tolerance": "0.01 ppm (다수 작물)",
+      "appliesTo": ["과일", "채소"],
+      "status": "2021년 사용 금지",
+      "healthRisk": "신경계 발달 장애"
+    },
+    {
+      "name": "글리포세이트 (Glyphosate)",
+      "nameEn": "Glyphosate",
+      "category": "제초제",
+      "tolerance": "다양 (작물별 상이)",
+      "appliesTo": ["곡물", "콩", "옥수수"],
+      "status": "FDA 승인",
+      "healthRisk": "발암 가능성 논란"
+    }
+  ],
+  "microbiological": [
+    {
+      "name": "살모넬라 (Salmonella)",
+      "nameEn": "Salmonella",
+      "category": "병원성 세균",
+      "limit": "불검출 (25g 당)",
+      "appliesTo": ["육류", "가금류", "계란"],
+      "healthRisk": "식중독, 발열, 설사",
+      "severity": "높음"
+    },
+    {
+      "name": "대장균 O157:H7 (E. coli O157:H7)",
+      "nameEn": "E. coli O157:H7",
+      "category": "병원성 세균",
+      "limit": "불검출",
+      "appliesTo": ["소고기", "생채소", "비살균 주스"],
+      "healthRisk": "용혈성 요독 증후군, 신부전",
+      "severity": "높음"
+    },
+    {
+      "name": "리스테리아 (Listeria monocytogenes)",
+      "nameEn": "Listeria monocytogenes",
+      "category": "병원성 세균",
+      "limit": "불검출 (즉석섭취식품)",
+      "appliesTo": ["유제품", "델리미트", "해산물"],
+      "healthRisk": "패혈증, 수막염, 임산부 유산 위험",
+      "severity": "높음"
+    }
+  ],
+  "allergens": [
+    { "name": "우유", "nameEn": "Milk", "category": "주요 알레르겐", "requirement": "라벨 표시 의무", "notes": "유당불내증과 우유 알레르기는 다름" },
+    { "name": "계란", "nameEn": "Eggs", "category": "주요 알레르겐", "requirement": "라벨 표시 의무", "notes": "백신 제조에도 사용될 수 있음" },
+    { "name": "땅콩", "nameEn": "Peanuts", "category": "주요 알레르겐", "requirement": "라벨 표시 의무", "notes": "심각한 아나필락시스 반응 가능" },
+    { "name": "견과류", "nameEn": "Tree nuts", "category": "주요 알레르겐", "requirement": "라벨 표시 의무", "notes": "아몬드, 호두, 캐슈넛 등 포함" },
+    { "name": "밀", "nameEn": "Wheat", "category": "주요 알레르겐", "requirement": "라벨 표시 의무", "notes": "셀리악병 환자 주의" },
+    { "name": "대두", "nameEn": "Soy", "category": "주요 알레르겐", "requirement": "라벨 표시 의무", "notes": "다양한 가공식품에 포함" },
+    { "name": "어류", "nameEn": "Fish", "category": "주요 알레르겐", "requirement": "라벨 표시 의무", "notes": "특정 어종 명시 필요" },
+    { "name": "갑각류", "nameEn": "Shellfish", "category": "주요 알레르겐", "requirement": "라벨 표시 의무", "notes": "새우, 게, 랍스터 등" }
+  ],
+  "contaminants": [
+    {
+      "name": "아플라톡신 (Aflatoxin)",
+      "nameEn": "Aflatoxin",
+      "category": "곰팡이 독소",
+      "limit": "20 ppb (총 아플라톡신)",
+      "appliesTo": ["견과류", "곡물", "옥수수"],
+      "healthRisk": "간암, 간 손상",
+      "severity": "높음"
+    },
+    {
+      "name": "멜라민 (Melamine)",
+      "nameEn": "Melamine",
+      "category": "산업 화학물질",
+      "limit": "2.5 ppm (영유아 조제식)",
+      "appliesTo": ["유제품", "영유아식품"],
+      "healthRisk": "신장 손상, 신장 결석",
+      "severity": "높음"
+    },
+    {
+      "name": "다이옥신 (Dioxins)",
+      "nameEn": "Dioxins",
+      "category": "환경 오염물질",
+      "limit": "매우 낮은 수준",
+      "appliesTo": ["육류", "유제품", "어류"],
+      "healthRisk": "발암물질, 내분비계 장애",
+      "severity": "높음"
+    }
+  ]
+};
+
+// 애플리케이션 로직
+let fdaData = fdaStandards;
+let currentFilter = 'all';
+let currentResults = [];
+
+// 초기화
+document.addEventListener('DOMContentLoaded', () => {
+    setupEventListeners();
+    performSearch(); // 초기 로딩시 모든 데이터 표시
+});
+
+// 이벤트 리스너 설정
+function setupEventListeners() {
+    document.getElementById('searchBtn').addEventListener('click', performSearch);
+    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') performSearch();
+    });
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.category;
+            performSearch();
+        });
+    });
+}
+
+// 검색 수행
+function performSearch() {
+    const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+    let results = [];
+
+    const categories = currentFilter === 'all'
+        ? ['heavyMetals', 'additives', 'pesticides', 'microbiological', 'allergens', 'contaminants']
+        : [currentFilter];
+
+    categories.forEach(category => {
+        if (fdaData[category]) {
+            const categoryResults = fdaData[category].filter(item => {
+                if (!searchTerm) return true;
+                const searchableText = JSON.stringify(item).toLowerCase();
+                return searchableText.includes(searchTerm);
+            });
+
+            results = results.concat(categoryResults.map(item => ({
+                ...item,
+                category: category
+            })));
+        }
+    });
+
+    currentResults = results;
+    displayResults(results);
+    updateStats(results);
+}
+
+// 결과 표시
+function displayResults(results) {
+    const resultsSection = document.getElementById('results');
+
+    if (results.length === 0) {
+        resultsSection.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; color: #999;">
+                <div style="font-size: 4em; margin-bottom: 20px;">🔍</div>
+                <h3 style="color: #666; margin-bottom: 10px;">검색 결과가 없습니다</h3>
+                <p>다른 검색어나 카테고리를 시도해보세요.</p>
+            </div>
+        `;
+        document.getElementById('statsSection').style.display = 'none';
+        return;
+    }
+
+    const resultsHTML = results.map(item => createResultCard(item)).join('');
+    resultsSection.innerHTML = resultsHTML;
+    document.getElementById('statsSection').style.display = 'block';
+}
+
+// 결과 카드 생성
+function createResultCard(item) {
+    const categoryNames = {
+        'heavyMetals': '중금속',
+        'additives': '식품첨가물',
+        'pesticides': '농약',
+        'microbiological': '미생물',
+        'allergens': '알레르겐',
+        'contaminants': '오염물질'
+    };
+
+    return `
+        <div class="result-card">
+            <div class="result-header">
+                <div class="result-title">${item.name}</div>
+                <span class="result-category category-${item.category}">${categoryNames[item.category]}</span>
+            </div>
+            <div class="result-body">
+                ${item.nameEn ? `<div class="result-row"><span class="result-label">영문명:</span> <span class="result-value">${item.nameEn}</span></div>` : ''}
+                ${item.category ? `<div class="result-row"><span class="result-label">분류:</span> <span class="result-value">${item.category}</span></div>` : ''}
+                ${item.limit ? `<div class="result-row"><span class="result-label">허용 기준:</span> <span class="result-value">${item.limit}</span></div>` : ''}
+                ${item.adI ? `<div class="result-row"><span class="result-label">일일섭취허용량:</span> <span class="result-value">${item.adI}</span></div>` : ''}
+                ${item.tolerance ? `<div class="result-row"><span class="result-label">잔류허용기준:</span> <span class="result-value">${item.tolerance}</span></div>` : ''}
+                ${item.requirement ? `<div class="result-row"><span class="result-label">요구사항:</span> <span class="result-value">${item.requirement}</span></div>` : ''}
+                ${item.appliesTo ? `
+                    <div class="result-row">
+                        <span class="result-label">적용 대상:</span>
+                        <div class="applies-to">
+                            ${item.appliesTo.map(food => `<span class="applies-to-item">${food}</span>`).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+                ${item.healthRisk ? `<div class="result-row"><span class="result-label">건강 위험:</span> <span class="result-value">${item.healthRisk}</span></div>` : ''}
+                ${item.severity ? `<div class="result-row"><span class="result-label">위험도:</span> <span class="severity-badge severity-${item.severity}">${item.severity}</span></div>` : ''}
+                ${item.status ? `<div class="result-row"><span class="result-label">상태:</span> <span class="status-badge">${item.status}</span></div>` : ''}
+                ${item.notes ? `<div class="result-row"><span class="result-label">참고사항:</span> <span class="result-value">${item.notes}</span></div>` : ''}
+            </div>
+        </div>
+    `;
+}
+
+// 통계 업데이트
+function updateStats(results) {
+    document.getElementById('totalResults').textContent = results.length;
+    document.getElementById('highSeverity').textContent = results.filter(item => item.severity === '높음').length;
+    document.getElementById('fdaApproved').textContent = results.filter(item =>
+        item.status && (item.status.includes('FDA 승인') || item.status.includes('GRAS'))
+    ).length;
+}
+    </script>
+</body>
+</html>

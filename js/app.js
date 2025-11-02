@@ -181,12 +181,13 @@ function highlightText(text, searchTerm) {
     return text.replace(regex, '<mark>$1</mark>');
 }
 
-// 초기 데이터 표시 (전체 카테고리)
+// 초기 데이터 표시 - 페이지 로드시 모든 데이터를 표시
 window.addEventListener('load', () => {
     setTimeout(() => {
         if (fdaData) {
-            // 초기 화면에는 환영 메시지 유지
-            console.log('FDA 데이터 준비 완료');
+            console.log('FDA 데이터 준비 완료 - 전체 데이터 표시');
+            // 초기 로딩시 모든 데이터 표시
+            performSearch();
         }
-    }, 500);
+    }, 100);
 });
