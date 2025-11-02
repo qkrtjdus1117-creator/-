@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FDA 식품 안전 분석기</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔬 FDA 식품 안전 분석기</h1>
+            <p class="subtitle">미국 FDA 기준에 따른 식품 안전·기준·유해물질 검색 및 분석</p>
+        </header>
+
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="물질명, 식품명, 또는 카테고리를 검색하세요 (예: 납, 수은, 아스파탐, 살모넬라)">
+                <button id="searchBtn">검색</button>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-category="all">전체</button>
+                <button class="filter-btn" data-category="heavyMetals">중금속</button>
+                <button class="filter-btn" data-category="additives">식품첨가물</button>
+                <button class="filter-btn" data-category="pesticides">농약</button>
+                <button class="filter-btn" data-category="microbiological">미생물</button>
+                <button class="filter-btn" data-category="allergens">알레르겐</button>
+                <button class="filter-btn" data-category="contaminants">오염물질</button>
+            </div>
+        </div>
+
+        <div id="results" class="results-section">
+            <div class="welcome-message">
+                <h2>환영합니다!</h2>
+                <p>FDA 식품 안전 분석기를 사용하여 식품 안전 기준을 검색하고 분석하세요.</p>
+                <ul>
+                    <li>중금속 (납, 수은, 카드뮴, 비소) 허용 기준</li>
+                    <li>식품첨가물 일일섭취허용량 (ADI)</li>
+                    <li>농약 잔류 허용 기준</li>
+                    <li>미생물 안전 기준</li>
+                    <li>주요 알레르겐 정보</li>
+                    <li>식품 오염물질 기준</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="stats-section" id="statsSection" style="display: none;">
+            <h3>검색 통계</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalResults">0</div>
+                    <div class="stat-label">검색 결과</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="highSeverity">0</div>
+                    <div class="stat-label">높은 위험도</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="fdaApproved">0</div>
+                    <div class="stat-label">FDA 승인</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>⚠️ 이 정보는 참고용이며, 정확한 규제 정보는 <a href="https://www.fda.gov" target="_blank">FDA 공식 웹사이트</a>를 확인하세요.</p>
+            <p class="version">Version 1.0.0 | 데이터 기준: 2024</p>
+        </footer>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
