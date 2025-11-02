@@ -13,17 +13,21 @@
 
 ## 🚀 사용 방법
 
-### 로컬에서 실행
+### 방법 1: 브라우저에서 직접 열기 (가장 간단)
 
-1. 저장소 클론
+1. 저장소를 다운로드하거나 클론합니다
 ```bash
 git clone <repository-url>
 cd <repository-name>
 ```
 
-2. 웹 브라우저로 `index.html` 파일 열기
+2. `index.html` 파일을 더블클릭하거나 브라우저로 드래그하여 엽니다
+   - **별도의 서버 설치 없이 바로 실행 가능합니다!**
+   - Chrome, Firefox, Safari, Edge 등 모든 최신 브라우저 지원
 
-또는 간단한 HTTP 서버 실행:
+### 방법 2: HTTP 서버 실행 (선택사항)
+
+원하는 경우 로컬 HTTP 서버로도 실행 가능합니다:
 
 ```bash
 # Python 3를 사용하는 경우
@@ -31,9 +35,12 @@ python -m http.server 8000
 
 # Node.js http-server를 사용하는 경우
 npx http-server
+
+# PHP를 사용하는 경우
+php -S localhost:8000
 ```
 
-3. 브라우저에서 `http://localhost:8000` 접속
+그 다음 브라우저에서 `http://localhost:8000` 접속
 
 ### 검색 방법
 
@@ -51,9 +58,9 @@ npx http-server
 
 ## 📊 데이터 구조
 
-모든 FDA 기준 데이터는 `data/fda-standards.json` 파일에 저장되어 있습니다.
+모든 FDA 기준 데이터는 JavaScript 객체로 저장되어 있습니다.
 
-```json
+```javascript
 {
   "heavyMetals": [...],      // 중금속
   "additives": [...],         // 식품첨가물
@@ -72,9 +79,10 @@ npx http-server
 ├── css/
 │   └── styles.css         # 스타일시트
 ├── js/
-│   └── app.js             # 메인 JavaScript
+│   ├── fda-data.js        # FDA 기준 데이터
+│   └── app.js             # 메인 JavaScript 애플리케이션
 ├── data/
-│   └── fda-standards.json # FDA 기준 데이터
+│   └── fda-standards.json # FDA 기준 원본 데이터 (참고용)
 └── README.md              # 프로젝트 문서
 ```
 
@@ -105,6 +113,11 @@ npx http-server
 - [FDA Food Contaminants](https://www.fda.gov/food/chemicals-metals-pesticides-food)
 
 ## 🔄 업데이트 내역
+
+### Version 1.1.0 (2024)
+- 브라우저에서 직접 실행 가능하도록 개선 (CORS 문제 해결)
+- JSON 데이터를 JavaScript 모듈로 변환
+- 서버 없이 index.html 파일을 바로 열어서 사용 가능
 
 ### Version 1.0.0 (2024)
 - 초기 릴리스

@@ -4,17 +4,21 @@ let currentFilter = 'all';
 let currentResults = [];
 
 // 초기화
-document.addEventListener('DOMContentLoaded', async () => {
-    await loadFDAData();
+document.addEventListener('DOMContentLoaded', () => {
+    loadFDAData();
     setupEventListeners();
 });
 
-// FDA 데이터 로드
-async function loadFDAData() {
+// FDA 데이터 로드 (fda-data.js에서 직접 로드)
+function loadFDAData() {
     try {
-        const response = await fetch('data/fda-standards.json');
-        fdaData = await response.json();
-        console.log('FDA 데이터 로드 완료:', fdaData);
+        // fdaStandards는 fda-data.js에서 정의됨
+        if (typeof fdaStandards !== 'undefined') {
+            fdaData = fdaStandards;
+            console.log('FDA 데이터 로드 완료:', fdaData);
+        } else {
+            throw new Error('FDA 데이터를 찾을 수 없습니다.');
+        }
     } catch (error) {
         console.error('FDA 데이터 로드 실패:', error);
         showError('데이터를 불러오는데 실패했습니다.');
